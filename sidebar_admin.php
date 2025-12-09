@@ -36,5 +36,9 @@
             <i class="fas fa-pills me-2"></i> Role Apoteker
         </a>
 
+        <a href="manajer_users.php"
+            class="list-group-item list-group-item-action bg-dark text-white <?= basename($_SERVER['PHP_SELF']) == 'manajer_users.php' ? 'active' : '' ?>">
+            <i class="fas fa-user-tie me-2"></i> Role Manajer
+        </a>
     </div>
 </div>
