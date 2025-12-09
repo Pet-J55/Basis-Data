@@ -1,9 +1,17 @@
 <?php
-include 'koneksi.php';
+// cek_login.php
+include 'koneksi.php'; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $koneksi->real_escape_string($_POST['username']);
-    $password = $koneksi->real_escape_string($_POST['password']); // CATATAN: Dalam produksi, gunakan hashing!
+    // Memastikan koneksi berhasil sebelum digunakan
+    if ($koneksi->connect_error) {
+        $_SESSION['login_error'] = 'Gagal terhubung ke database.';
+        header("Location: login.php");
+        exit;
+    }
+
+    $username = $koneksi->real_escape_string($_POST['username'] ?? '');
+    $password = $koneksi->real_escape_string($_POST['password'] ?? '');
 
     // Query untuk mengambil data pengguna
     $sql = "SELECT id_user, username, nama_lengkap, role, password FROM users WHERE username = '$username'";
@@ -11,7 +19,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
-            if ($password === $user['password']) {
+        
+        if ($password === $user['password']) {
+            
+            // Set session data
             $_SESSION['logged_in'] = true;
             $_SESSION['id_user'] = $user['id_user'];
             $_SESSION['username'] = $user['username'];
@@ -21,16 +32,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Arahkan ke dashboard sesuai role
             $role = strtolower($user['role']);
             
+            // --- LOGIKA PENGARAHAN YANG SUDAH KOREK ---
+            
             if ($role === 'kasir') {
-                 // Resepsionis dalam permintaan Anda adalah Kasir dalam DB
-                 header("Location: dashboard_resepsionis.php"); 
+                header("Location: dashboard_resepsionis.php"); 
             } elseif ($role === 'apoteker') {
-                 // Apoteker tidak diminta, jadi arahkan ke dashboard default jika ada
-                 header("Location: dashboard.php"); 
+                // PATH SUDAH BENAR: Langsung masuk ke folder apoteker
+                header("Location: /BASIS-DATA/apoteker/dashboard_apoteker.php");
+            } elseif ($role === 'manajer') {
+                header("Location: dashboard_manajer.php");
             } else {
-                 // Admin, Dokter, dan role lain
-                 header("Location: dashboard_" . $role . ".php");
+                header("Location: dashboard_" . $role . ".php");
             }
+
+            // ----------------------------------------
 
             exit;
 

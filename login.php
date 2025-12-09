@@ -6,13 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari formulir
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
-
-    if ($username === 'admin' && $password === 'admin') {
-        header("Location: dashboard.php");
-        exit;
-    } else {
-        $login_error = 'Username atau Password salah. Coba: admin/admin.';
-    }
 }
 ?>
 <!DOCTYPE html>
